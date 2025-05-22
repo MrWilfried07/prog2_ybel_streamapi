@@ -22,7 +22,7 @@ public class Main {
         // Task III: Random
 
         // Task IV+V: Resources
-        System.out.println(resources("file.txt"));
+        System.out.println(resources("/streamapi/file.txt"));
     }
 
     /**
@@ -73,8 +73,10 @@ public class Main {
      * @return An open {@link InputStream} for the resource file
      */
     private static InputStream getResourceAsStream(String path) {
-        // TODO
-        throw new UnsupportedOperationException();
+//        // TODO
+//        throw new UnsupportedOperationException();
+
+        return Main.class.getResourceAsStream(path) ;
     }
 
     /**
@@ -88,31 +90,51 @@ public class Main {
      * @return String of all matching lines, separated by {@code "\n"}
      */
     public static String resources(String path) {
-        // TODO
-        StringBuilder result = new StringBuilder();
-
-        try (InputStream stream = getResourceAsStream(path)) {
-            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
-
-            List<String> allLines = new ArrayList<>();
-
-            String newLine = r.readLine();
-            while (newLine != null) {
-                allLines.add(newLine);
-                newLine = r.readLine();
+//        // TODO
+//        StringBuilder result = new StringBuilder();
+//
+//        try (InputStream stream = getResourceAsStream(path)) {
+//            BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+//
+//            List<String> allLines = new ArrayList<>();
+//
+//            String newLine = r.readLine();
+//            while (newLine != null) {
+//                allLines.add(newLine);
+//                newLine = r.readLine();
+//            }
+//
+//            for (int i = 1; i < allLines.size(); i++) {
+//                String s = allLines.get(i);
+//                if (s.startsWith("a") && !(s.length() < 2)) {
+//                    result.append(allLines.get(i)).append("\n");
+//                }
+//            }
+//
+//        } catch (IOException e) {
+//            System.err.println("Ouch, that didn't work: \n" + e.getMessage());
+//        }
+//
+//        return result.toString();
+        try (InputStream stream = getResourceAsStream(path))
+        {
+            if (stream == null)
+            {
+                System.err.println("Resource not found: " + path);
+                return "";
             }
-
-            for (int i = 1; i < allLines.size(); i++) {
-                String s = allLines.get(i);
-                if (s.startsWith("a") && !(s.length() < 2)) {
-                    result.append(allLines.get(i)).append("\n");
-                }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream)))
+            {
+                return reader.lines()
+                    .filter(s -> s.startsWith("a") && s.length() >= 2)
+                    .reduce((s1, s2) -> s1 + "\n" + s2)
+                    .orElse("");
             }
-
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             System.err.println("Ouch, that didn't work: \n" + e.getMessage());
+            return "" ;
         }
 
-        return result.toString();
     }
 }
